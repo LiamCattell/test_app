@@ -2,16 +2,20 @@
 <html>
 <head>
 	<title>Best places to find technology jobs</title>
+	<link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
 </head>
 
 <body>
-	<h2>The best places to find technology jobs, based on your &#36;{{max_price}} maximum house budget</h2>
-	
-	<p>
-		Note: These are static plots because Heroku struggles to plot choropleths (backend server request gets interrupted).
-		Full code for mining data and displaying dynamic plots is <a href="https://github.com/LiamCattell/test_app">available here</a>.
-	<p>
-	
-	<img src="{{url_for('static', filename=img_name)}}" alt="{{alt_text}}"/>
+	<div class=page>
+		<h2>The best places to find technology jobs</h2>
+		<h3>Based on a &#36;{{max_price}} maximum house budget</h3>
+		
+		<p>
+			Note: These are static plots because Heroku struggles to plot choropleths (backend server request gets interrupted).
+			Full code for mining data and displaying dynamic plots is <a href="https://github.com/LiamCattell/test_app">available here</a>.
+		<p>
+		
+		<img src="{{url_for('static', filename=img_name)}}" alt="{{alt_text}}"/>
+	</div>
 </body>
 </html>

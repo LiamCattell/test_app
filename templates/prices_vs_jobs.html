@@ -2,27 +2,29 @@
 <html>
 <head>
 	<title>Best places to find technology jobs</title>
+	<link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
 	
 	<script type="text/javascript">
 		function updateTextInput(val) {
-		document.getElementById('textInput').value=val; 
+		document.getElementById('textInput').value="$"+val; 
 		}
 	</script>
 </head>
 
 <body>
+	<div class=page>
+		<h3> 
+			<form id='select_profession' method='post' action='best_places_for_budget' >
+				Discover the best places to find technology jobs, based on a 
+				<input type="range" name="max_price" value="400000" min="150000" max="700000" step="50000" onchange="updateTextInput(this.value);" />
+				<input type="text" id="textInput" value="$400000">
+				maximum house budget.
 
-	<h3> 
-		<form id='select_profession' method='post' action='best_places_for_budget' >
-			Discover the best places to find technology jobs, based on a 
-			<input type="range" name="max_price" value="400000" min="150000" max="700000" step="50000" onchange="updateTextInput(this.value);" />
-			<input type="text" id="textInput" value="400000">
-			maximum house budget.
-
-			<p>
-				<input type='submit' value='Go!' />
-			</p>
-		</form>
-	</h3>
+				<p>
+					<input type='submit' value='Go!' />
+				</p>
+			</form>
+		</h3>
+	</div>
 </body>
 </html>
