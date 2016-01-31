@@ -1,6 +1,5 @@
-import pickle
 from flask import Flask, render_template, request
-#from getdata import load_jobs
+from getdata import load_jobs_per_state
 from plotchoropleth import choropleth_usa
 
 app = Flask(__name__)
@@ -14,7 +13,7 @@ def index():
 def jobs_vs_prices():
     #jobs = load_jobs('data-science')
 
-    jobs_per_state = pickle.load(open('data/jobs_data-science.pkl', 'rb'))
+    jobs_per_state = load_jobs_per_state('data-science')
     
     scores = {'ca': 3.4, 'tx': 0.7, 'nc': 2.1}
     script, div = choropleth_usa(scores, 'loaded some data')
