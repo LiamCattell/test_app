@@ -14,7 +14,7 @@ def jobs_vs_prices():
     jobs = load_jobs('data-science')
     
     scores = {'ca': 3.4, 'tx': 0.7, 'nc': 2.1}
-    script, div = choropleth_usa(scores)
+    script, div = choropleth_usa(scores, 'loaded some data')
     return render_template('jobs_vs_prices_graph.html', script=script, div=div)
 	
 if __name__ == "__main__":
