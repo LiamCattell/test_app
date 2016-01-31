@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-#from plotchoropleth import choropleth_usa
+from plotchoropleth import choropleth_usa
 from bokeh.plotting import figure
 from bokeh.embed import components
 
