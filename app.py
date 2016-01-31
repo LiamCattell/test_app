@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request
-from plotchoropleth import choropleth_usa
+#from plotchoropleth import choropleth_usa
+from bokeh.plotting import figure
+from bokeh.embed import components
+
 
 app = Flask(__name__)
 
@@ -13,9 +16,15 @@ def jobs_vs_prices():
     #script = '<!-- ff -->'
     #div = '<h3>Backend working</h3>'
 
-    scores = {'tx': 3.4, 'ca': 0.6, 'nc': 2.1}
+    #scores = {'tx': 3.4, 'ca': 0.6, 'nc': 2.1}
+    #script, div = choropleth_usa(scores)
+
     
-    script, div = choropleth_usa(scores)
+    plot = figure(title='Data from Quandle WIKI set',
+                  x_axis_label='date',
+                  x_axis_type='datetime')
+                  
+    script, div = components(plot)
 
     return render_template('jobs_vs_prices_graph.html', script=script, div=div)
 	
