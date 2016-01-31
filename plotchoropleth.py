@@ -3,7 +3,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.palettes import PuRd5
 
-def choropleth_usa(scores, title='USA Chloropleth'):    
+def choropleth_usa(scores, title='USA Choropleth'):    
     states = us_states.data.copy()
     
     del states['HI']
