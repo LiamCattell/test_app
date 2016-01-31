@@ -1,14 +1,18 @@
 <html>
 <head>
-	<link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.11.0.min.css" type="text/css" />
-	<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.11.0.min.js"></script>
-	{{ script | safe }}
+	<title>
+	{{profession}} jobs vs house prices
+	</title>
 </head>
 
 <body>
-	<div>
-		<h2>Insert graph here </h2>
-		{{ div | safe }}
-	</div>
+	<h2>Available {{profession}} jobs (scaled by average house price)&#42;</h2>
+	
+	<p>
+		&#42; These are static plots because Heroku struggles to plot choropleths using only one dyno (backend server request gets interrupted).
+		Full code for gathering data and displaying dynamic plots is <a href="https://github.com/LiamCattell/test_app">available here</a>.
+	<p>
+	
+	<img src="{{url_for('static', filename=img_name)}}" alt="{{alt_text}}"/>
 </body>
 </html>
