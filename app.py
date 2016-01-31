@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from plotchoropleth import choropleth_usa
 
 app = Flask(__name__)
 
@@ -9,7 +10,9 @@ def index():
 
 @app.route('/jobs_vs_prices', methods=['POST'])
 def jobs_vs_prices():
-    return render_template('jobs_vs_prices_graph.html')
+    scores = {'ca': 3.4, 'tx': 0.7, 'nc': 2.1}
+    script, div = choropleth_usa(scores)
+    return render_template('jobs_vs_prices_graph.html', script=script, div=div)
 	
 if __name__ == "__main__":
 	app.run()
