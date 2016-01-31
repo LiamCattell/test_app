@@ -9,7 +9,7 @@ def index():
 
 @app.route('/jobs_vs_prices', methods=['POST'])
 def jobs_vs_prices():
-    return render_template('test_plot.html')
+    return render_template('test_plot2.html')
     #return render_template('jobs_vs_prices_graph.html', script=script, div=div)
 	
 if __name__ == "__main__":
