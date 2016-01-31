@@ -9,14 +9,8 @@ def index():
 
 @app.route('/jobs_vs_prices', methods=['POST'])
 def jobs_vs_prices():
-    script_f = open('test_plot_script.txt', 'r')
-    script = script_f.read()
-    
-    div_f = open('test_plot_div.txt', 'r')
-    div = div_f.read()
-
-
-    return render_template('jobs_vs_prices_graph.html', script=script, div=div)
+    return render_template('test_plot.html')
+    #return render_template('jobs_vs_prices_graph.html', script=script, div=div)
 	
 if __name__ == "__main__":
 	app.run()
