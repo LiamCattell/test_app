@@ -1,5 +1,5 @@
 import pandas as pd
-from getdata import get_fips_data
+from getdata import get_fips_data, load_populations
 
 
 def get_state_scores(jobs, prices):
@@ -38,3 +38,16 @@ def get_county_scores(jobs):
     
     return dict(zip(jobs_per_county.keys(), scores))
     
+
+fips = get_fips_data()
+populations = load_populations()
+popfips = pd.merge(fips[['state','county','fips_state','fips_county']], populations, on=['county', 'state'])
+
+pop_per_county = dict(zip(zip(popfips['fips_state'], popfips['fips_county']), 1. - popfips['population2010']/popfips['population2000']))
+
+min_pop_score = float(min(pop_per_county.values()))
+max_pop_score = float(max(pop_per_county.values()))
+new_max = max_pop_score - min_pop_score
+
+scores = [(float(x)-min_pop_score)/new_max for x in pop_per_county.values()]
+scores = dict(zip(pop_per_county.keys(), scores))

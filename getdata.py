@@ -162,10 +162,10 @@ def download_populations(fips, name_root='data/populationdata'):
                     if pop == '...':
                         pops.append(None)
                     else:
-                        pops.append(pop.replace(',',''))
+                        pops.append(int(pop.replace(',','')))
     
                 pairs.append([state, state_long, county] + pops)
-            
+                
     populations = pd.DataFrame(pairs, columns=['state','state_long','county','population1990','population2000','population2010'])
     
     # Save the dataframe
