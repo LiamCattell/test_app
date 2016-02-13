@@ -118,6 +118,70 @@ def load_counties(name_root='data/countydata'):
     return pd.read_pickle(name_root)
     
 
+
+
+###############################################################################
+# POPULATION DATA
+###############################################################################
+def download_populations(fips, name_root='data/populationdata'):
+    """
+    Get the population of each US county from the last three censuses (censi?)
+    """
+    # Get a list of US states
+    states_long = fips['state_long'].unique()
+    states = fips['state'].unique()
+    
+    pairs = []
+    
+    # Loop over each state
+    for state,state_long in zip(states,states_long):
+        print state, state_long
+        
+        # Get the data page corresponding to this state
+        url = 'http://www.citypopulation.de/php/usa-census-%s.php' % state_long.replace(' ','')
+        header = {'User-Agent': 'Mozilla/5.0'} #Needed to prevent 403 error on Wikipedia
+        req = urllib2.Request(url,headers=header)
+        page = urllib2.urlopen(req)
+        soup = BeautifulSoup(page)
+        
+        # Find the table within the html
+        table = soup.find('table', {'class': 'data', 'id': 'tl'})
+        
+        # Loop over the rows in the table
+        for row in table.findAll('tr'):
+            cells = row.findAll('td')
+            
+            if len(cells) >= 5:
+                county = cells[0].findAll(text=True)[0].lower()
+                county = county.replace('.', '')
+                county = county.replace("'", "")
+                
+                pops = []
+                for i in range(2,5):
+                    pop = cells[i].findAll(text=True)[0]
+                    if pop == '...':
+                        pops.append(None)
+                    else:
+                        pops.append(pop.replace(',',''))
+    
+                pairs.append([state, state_long, county] + pops)
+            
+    populations = pd.DataFrame(pairs, columns=['state','state_long','county','population1990','population2000','population2010'])
+    
+    # Save the dataframe
+    populations.to_pickle(name_root)
+    print 'Saved populations data!'
+    
+    return
+
+
+def load_populations(name_root='data/populationdata'):
+    """
+    Load populations data from a pickle file
+    """
+    return pd.read_pickle(name_root)
+
+
 ###############################################################################
 # JOBS DATA
 ###############################################################################
@@ -126,8 +190,8 @@ counties = load_counties()
 
 def split_location(x):
     """
-    Split the default location column into city, state, country, latitude, 
-    longitude, county, and FIPS code
+    Split the default location column into city, state, country, county, and 
+    FIPS code
     """
     empty = pd.Series(['n/a'] * 5)
     if (None in x[0]) or (x[0]['country'] != 'US'):
