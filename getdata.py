@@ -1,7 +1,7 @@
 import pandas as pd
 import urllib2
 import requests
-import geocoder
+import random
 from bs4 import BeautifulSoup
 from re import sub
 
@@ -127,26 +127,35 @@ def split_location(x):
     Split the default location column into city, state, country, latitude, 
     longitude, county, and FIPS code
     """
-    empty = pd.Series(['n/a'] * 7)
+    empty = pd.Series(['n/a'] * 5)
     if (None in x[0]) or (x[0]['country'] != 'US'):
-        #return pd.Series(['n/a', 'n/a', 'n/a'])
+        print ' No location info'
         return empty
 
-    location = ', '.join(x[0].values())
-    codes = [[0,0]]
+    city = x[0]['city'].lower()
+    state = x[0]['state'].lower()
+    country = x[0]['country'].lower()
     
-    # Get the lat, lng, and county
-    g = geocoder.google(location)
-    if g.county is None:
-        print 'None county'
+    # Annoyingly, sometimes ApplyQ puts the county in the 'city' field, so we
+    # have to check for that
+    if 'county' in city:
+        countys = counties.loc[(counties['state'] == state) & (counties['county'] == city.replace(' county','')), 'county'].values
+    else:
+        countys = counties.loc[(counties['state'] == state) & (counties['city'] == city), 'county'].values
+
+    if len(countys) == 0:
+        print 'No county'
         return empty
+    # If the city is in multiple counties, randomly select a county
+    county = countys[random.choice(range(len(countys)))]
 
     # Find the FIPS code that corresponds to the county
-    codes = fips.loc[(fips['state_long'] == g.state_long.lower()) & (fips['county'] == g.county.lower().replace(' county','')), ['fips_state','fips_county']].values
+    codes = fips.loc[(fips['state'] == state) & (fips['county'] == county), ['fips_state','fips_county']].values
     if len(codes) != 1:
+        print 'No FIPS code'
         return empty
     
-    return pd.Series([v.lower() for v in x[0].values()] + [g.lat, g.lng, g.county.lower(), tuple(codes[0])])
+    return pd.Series([city, state, country, county, tuple(codes[0])])
 
 
 def search_jobs(search_params={'pro': 'librarian', 'geo': 'durham, nc'}):
@@ -168,7 +177,7 @@ def search_jobs(search_params={'pro': 'librarian', 'geo': 'durham, nc'}):
         
         # Clean up location get long state name from FIPS
         #jobs[['city','state','country']] = jobs['location'].apply(split_location)
-        jobs[['city','state','country', 'latitude', 'longitude', 'county', 'fips']] = jobs['location'].apply(split_location)
+        jobs[['city','state','country', 'county', 'fips']] = jobs['location'].apply(split_location)
         jobs.drop('location', axis=1, inplace=True)
         jobs = jobs.loc[jobs['city'] != 'n/a']
     
