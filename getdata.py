@@ -336,7 +336,7 @@ def get_average_prices_data():
     return average_prices
     
     
-def download_housprices(fips, name_root='data/housepricesdata'):
+def download_houseprices(fips, name_root='data/housepricesdata'):
     """
     Get average house price in each COUNTY (via Trulia)
     """
@@ -350,7 +350,7 @@ def download_housprices(fips, name_root='data/housepricesdata'):
     for state,state_long in zip(states,states_long):
         print state, state_long
     
-        url = 'http://www.trulia.com/home_prices/%s'
+        url = 'http://www.trulia.com/home_prices/%s/' % state_long.title().replace(' ','_')
         header = {'User-Agent': 'Mozilla/5.0'}
         req = urllib2.Request(url,headers=header)
         page = urllib2.urlopen(req)
@@ -379,7 +379,7 @@ def download_housprices(fips, name_root='data/housepricesdata'):
     average_prices.to_pickle(name_root)
     print 'Saved houseprices data!'
     
-    return average_prices
+    return
     
 
 def load_houseprices(name_root='data/housepricesdata'):
