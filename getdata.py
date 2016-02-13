@@ -27,7 +27,6 @@ def get_fips_data(filepath='data/us_fips_codes.csv'):
     fips = pd.read_csv(filepath)
     return fips
 
-fips = get_fips_data()
 
 ###############################################################################
 # CITIES DATA
@@ -70,16 +69,17 @@ def download_counties(fips, name_root='data/countydata'):
     the US (via http://www.citypopulation.de)
     """
     # Get a list of US states
-    states = fips['state_long'].unique()
+    states_long = fips['state_long'].unique()
+    states = fips['state'].unique()
     
     pairs = []
     
     # Loop over each state
-    for state in states:
-        print state
+    for state,state_long in zip(states,states_long):
+        print state, state_long
         
         # Get the data page corresponding to this state
-        url = 'http://www.citypopulation.de/php/usa-census-%s.php' % state.replace(' ','')
+        url = 'http://www.citypopulation.de/php/usa-census-%s.php' % state_long.replace(' ','')
         header = {'User-Agent': 'Mozilla/5.0'} #Needed to prevent 403 error on Wikipedia
         req = urllib2.Request(url,headers=header)
         page = urllib2.urlopen(req)
@@ -98,9 +98,9 @@ def download_counties(fips, name_root='data/countydata'):
                 
                 # Some cities are in multiple counties
                 for c in county.split(' / '):
-                    pairs.append([state, city, c])
+                    pairs.append([state, state_long, city, c])
             
-    counties = pd.DataFrame(pairs, columns=['state_long','city','county'])
+    counties = pd.DataFrame(pairs, columns=['state','state_long','city','county'])
     
     # Save the dataframe
     counties.to_pickle(name_root)
@@ -119,6 +119,9 @@ def load_counties(name_root='data/countydata'):
 ###############################################################################
 # JOBS DATA
 ###############################################################################
+fips = get_fips_data()
+counties = load_counties()
+
 def split_location(x):
     """
     Split the default location column into city, state, country, latitude, 
