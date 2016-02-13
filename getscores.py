@@ -1,5 +1,6 @@
 import pandas as pd
-from getdata import get_fips_data, load_populations
+import numpy as np
+from getdata import get_fips_data
 
 
 def get_state_scores(jobs, prices):
@@ -28,26 +29,38 @@ def get_state_scores(jobs, prices):
     
     return dict(zip(jobs_per_state.keys(), scores))
     
+
+def get_scores(per_county):
+    scores = np.array(per_county.values())
     
-def get_county_scores(jobs):
+    upper = np.percentile(scores, 75)
+    lower = np.percentile(scores, 25)
+    iqr = upper - lower
+    
+    scores[scores > upper+1.5*iqr] = upper+1.5*iqr
+    scores[scores < lower-1.5*iqr] = lower-1.5*iqr
+    
+    scores -= scores.min()
+    scores /= scores.max()
+    
+    return dict(zip(per_county.keys(), scores))
+
+    
+def get_jobs_scores(jobs):
     jobs_per_county = jobs.groupby(['fips'])['id'].count().to_dict()
-    
-    max_job_score = float(max(jobs_per_county.values()))
-    
-    scores = [float(x)/max_job_score for x in jobs_per_county.values()]
-    
-    return dict(zip(jobs_per_county.keys(), scores))
+    return get_scores(jobs_per_county)
     
 
-fips = get_fips_data()
-populations = load_populations()
-popfips = pd.merge(fips[['state','county','fips_state','fips_county']], populations, on=['county', 'state'])
-
-pop_per_county = dict(zip(zip(popfips['fips_state'], popfips['fips_county']), 1. - popfips['population2010']/popfips['population2000']))
-
-min_pop_score = float(min(pop_per_county.values()))
-max_pop_score = float(max(pop_per_county.values()))
-new_max = max_pop_score - min_pop_score
-
-scores = [(float(x)-min_pop_score)/new_max for x in pop_per_county.values()]
-scores = dict(zip(pop_per_county.keys(), scores))
+def get_populations_scores(populations):
+    fips = get_fips_data()
+    popfips = pd.merge(fips[['state','county','fips_state','fips_county']], populations, on=['county', 'state'])
+    
+    growth_per_county = dict(zip(zip(popfips['fips_state'], popfips['fips_county']), (popfips['population2010']/popfips['population2000']) - 1.))
+    return get_scores(growth_per_county)
+    
+def get_houseprices_scores(houseprices):
+    fips = get_fips_data()
+    pricefips = pd.merge(fips[['state','county','fips_state','fips_county']], houseprices, on=['county', 'state'])
+    
+    price_per_county = dict(zip(zip(pricefips['fips_state'], pricefips['fips_county']), -pricefips['average_price'].values))
+    return get_scores(price_per_county)
