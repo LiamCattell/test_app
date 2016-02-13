@@ -59,6 +59,61 @@ def get_cities_data():
     cities = pd.DataFrame(pairs, columns=['state_long','city','rank'])
     
     return cities
+
+
+###############################################################################
+# COUNTIES DATA
+###############################################################################
+def download_counties(fips, name_root='data/countydata'):
+    """
+    Get the corresponding county for every reasonably sized town and city in 
+    the US (via http://www.citypopulation.de)
+    """
+    # Get a list of US states
+    states = fips['state_long'].unique()
+    
+    pairs = []
+    
+    # Loop over each state
+    for state in states:
+        print state
+        
+        # Get the data page corresponding to this state
+        url = 'http://www.citypopulation.de/php/usa-census-%s.php' % state.replace(' ','')
+        header = {'User-Agent': 'Mozilla/5.0'} #Needed to prevent 403 error on Wikipedia
+        req = urllib2.Request(url,headers=header)
+        page = urllib2.urlopen(req)
+        soup = BeautifulSoup(page)
+        
+        # Find the table within the html
+        table = soup.find('table', {'class': 'data', 'id': 'ts'})
+        
+        # Loop over the rows in the table
+        for row in table.findAll('tr'):
+            cells = row.findAll('td')
+            
+            if len(cells) >= 3:
+                city = cells[0].findAll(text=True)[0].lower()
+                county = cells[2].findAll(text=True)[0].lower()
+                
+                # Some cities are in multiple counties
+                for c in county.split(' / '):
+                    pairs.append([state, city, c])
+            
+    counties = pd.DataFrame(pairs, columns=['state_long','city','county'])
+    
+    # Save the dataframe
+    counties.to_pickle(name_root)
+    print 'Saved counties data!'
+    
+    return
+ 
+   
+def load_counties(name_root='data/countydata'):
+    """
+    Load counties data from a pickle file
+    """
+    return pd.read_pickle(name_root)
     
 
 ###############################################################################
