@@ -98,6 +98,8 @@ def download_counties(fips, name_root='data/countydata'):
                 
                 # Some cities are in multiple counties
                 for c in county.split(' / '):
+                    c = c.replace('.', '')
+                    c = c.replace("'", "")
                     pairs.append([state, state_long, city, c])
             
     counties = pd.DataFrame(pairs, columns=['state','state_long','city','county'])
