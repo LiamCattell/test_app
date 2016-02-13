@@ -11,6 +11,7 @@ scores = get_houseprices_scores(load_houseprices())
 svg = open('data/us_counties.svg', 'r').read()
 soup = BeautifulSoup(svg, selfClosingTags=['defs','sodipodi:namedview'])
 
+# Set the viewBox to scale the svg (for some reason, bs4 removes the capitalisation)
 dimensions = soup.findAll('svg')[0]
 soup.find('svg')['viewBox'] = dimensions['viewbox']
 soup.find('svg')['preserveAspectRatio'] = dimensions['preserveaspectratio']
