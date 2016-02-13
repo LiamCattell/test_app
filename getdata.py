@@ -1,6 +1,7 @@
 import pandas as pd
 import urllib2
 import requests
+import geocoder
 from bs4 import BeautifulSoup
 from re import sub
 
@@ -26,6 +27,7 @@ def get_fips_data(filepath='data/us_fips_codes.csv'):
     fips = pd.read_csv(filepath)
     return fips
 
+fips = get_fips_data()
 
 ###############################################################################
 # CITIES DATA
@@ -64,11 +66,29 @@ def get_cities_data():
 ###############################################################################
 def split_location(x):
     """
-    Split the default location column into city, state, and country
+    Split the default location column into city, state, country, latitude, 
+    longitude, county, and FIPS code
     """
+    empty = pd.Series(['n/a'] * 7)
     if (None in x[0]) or (x[0]['country'] != 'US'):
-        return pd.Series(['n/a', 'n/a', 'n/a'])
-    return pd.Series([v.lower() for v in x[0].values()])
+        #return pd.Series(['n/a', 'n/a', 'n/a'])
+        return empty
+
+    location = ', '.join(x[0].values())
+    codes = [[0,0]]
+    
+    # Get the lat, lng, and county
+    g = geocoder.google(location)
+    if g.county is None:
+        print 'None county'
+        return empty
+
+    # Find the FIPS code that corresponds to the county
+    codes = fips.loc[(fips['state_long'] == g.state_long.lower()) & (fips['county'] == g.county.lower().replace(' county','')), ['fips_state','fips_county']].values
+    if len(codes) != 1:
+        return empty
+    
+    return pd.Series([v.lower() for v in x[0].values()] + [g.lat, g.lng, g.county.lower(), tuple(codes[0])])
 
 
 def search_jobs(search_params={'pro': 'librarian', 'geo': 'durham, nc'}):
@@ -89,13 +109,19 @@ def search_jobs(search_params={'pro': 'librarian', 'geo': 'durham, nc'}):
         jobs = pd.DataFrame(jobs_raw.json()['list'].values())
         
         # Clean up location get long state name from FIPS
-        jobs[['city','state','country']] = jobs['location'].apply(split_location)
+        #jobs[['city','state','country']] = jobs['location'].apply(split_location)
+        jobs[['city','state','country', 'latitude', 'longitude', 'county', 'fips']] = jobs['location'].apply(split_location)
         jobs.drop('location', axis=1, inplace=True)
         jobs = jobs.loc[jobs['city'] != 'n/a']
     
         # Final tidying
         jobs = jobs.convert_objects(convert_numeric=True)
         
+    if jobs is None:
+        print 'Found None jobs'
+    else:
+        print 'Found %s %s jobs' % (len(jobs), search_params['pro'])
+    
     return jobs
     
 
@@ -119,6 +145,9 @@ def download_jobs(profession_key, name_root='data/jobsdata', num_cities_per_stat
     
     for index, city in cities.iterrows():
         search_params['geo'] = city['city'] + ', ' + city['state']
+
+        print search_params['geo']        
+        
         new_jobs = search_jobs(search_params)
         
         if (new_jobs is not None) and (jobs is None):

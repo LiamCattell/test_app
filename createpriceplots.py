@@ -1,6 +1,6 @@
 import pandas as pd
 from getdata import load_jobs, get_average_prices_data, get_fips_data
-from plotchoropleth import choropleth_usa
+from plotchoropleth import choropleth_usa_states
 
 
 profession_keys = ['data-science', 'financial-services', 'information-technology', 'mobile-app']
@@ -41,4 +41,4 @@ for p in range(12):
     else:
         scores = {}
     
-    choropleth_usa(scores, 'templates/pricedata_%s.html' % int(max_price), title='')
+    choropleth_usa_states(scores, 'templates/pricedata_%s.html' % int(max_price), title='')
