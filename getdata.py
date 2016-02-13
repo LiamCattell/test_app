@@ -258,7 +258,7 @@ def search_jobs(search_params={'pro': 'librarian', 'geo': 'durham, nc'}):
     return jobs
     
 
-def download_jobs(profession_key, name_root='data/jobsdata', num_cities_per_state=5):
+def download_jobs(profession_key, radius=70, name_root='data/jobsdata', num_cities_per_state=5):
     """
     Download and save jobs data as a pickle file
     """
@@ -272,7 +272,7 @@ def download_jobs(profession_key, name_root='data/jobsdata', num_cities_per_stat
     cities = cities[(cities.state != 'hi') & (cities.state != 'ak')]
     cities = cities.loc[cities['rank'] < num_cities_per_state+1]
     
-    search_params = {'pro': profession_key}
+    search_params = {'pro': profession_key, 'radius': 70}
 
     jobs = None
     
@@ -306,7 +306,7 @@ def load_jobs(profession_key, name_root='data/jobsdata'):
 ###############################################################################
 def get_average_prices_data():
     """
-    Get average house price in each state (via Trulia)
+    Get average house price in each STATE (via Trulia)
     """
     url = 'http://www.trulia.com/home_prices/'
     header = {'User-Agent': 'Mozilla/5.0'}
@@ -334,3 +334,56 @@ def get_average_prices_data():
     average_prices = pd.DataFrame(prices, columns=['state_long','average_price'])    
     
     return average_prices
+    
+    
+def download_housprices(fips, name_root='data/housepricesdata'):
+    """
+    Get average house price in each COUNTY (via Trulia)
+    """
+    # Get a list of US states
+    states_long = fips['state_long'].unique()
+    states = fips['state'].unique()
+    
+    prices = []
+    
+    # Loop over each state
+    for state,state_long in zip(states,states_long):
+        print state, state_long
+    
+        url = 'http://www.trulia.com/home_prices/%s'
+        header = {'User-Agent': 'Mozilla/5.0'}
+        req = urllib2.Request(url,headers=header)
+        page = urllib2.urlopen(req)
+        soup = BeautifulSoup(page)
+         
+        # Find div containing prices table
+        div = soup.find('div', { 'id' : 'heatmap_table' })
+        
+        for tab in div.findAll('table'):
+            for row in tab.findAll('tr')[2:]:
+                cells = row.findAll('td')
+                
+                if len(cells) > 2:
+                    county = cells[0].find(text=True).lower()
+                    county = county.replace(".","")
+                    county = county.replace("'","")
+                    
+                    price_text = cells[1].find(text=True)
+                    
+                    if price_text != '-':
+                        price = float(sub(r'[^\d.]', '', cells[1].find(text=True)))
+                        prices.append([state, state_long, county, price])
+            
+    average_prices = pd.DataFrame(prices, columns=['state','state_long','county','average_price'])
+    
+    average_prices.to_pickle(name_root)
+    print 'Saved houseprices data!'
+    
+    return average_prices
+    
+
+def load_houseprices(name_root='data/housepricesdata'):
+    """
+    Load average house price data from a pickle file
+    """
+    return pd.read_pickle(name_root)
