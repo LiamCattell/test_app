@@ -118,8 +118,6 @@ def load_counties(name_root='data/countydata'):
     return pd.read_pickle(name_root)
     
 
-
-
 ###############################################################################
 # POPULATION DATA
 ###############################################################################
@@ -269,10 +267,10 @@ def download_jobs(profession_key, radius=70, name_root='data/jobsdata', num_citi
     cities = pd.merge(cities, fips.groupby(['state_long','state']).count().reset_index()[['state_long','state']], how='left', on=['state_long'])
 
     # Remove Hawaii and Alaska
-    cities = cities[(cities.state != 'hi') & (cities.state != 'ak')]
+    #cities = cities[(cities.state != 'hi') & (cities.state != 'ak')]
     cities = cities.loc[cities['rank'] < num_cities_per_state+1]
     
-    search_params = {'pro': profession_key, 'radius': 70}
+    search_params = {'pro': profession_key, 'radius': radius}
 
     jobs = None
     
