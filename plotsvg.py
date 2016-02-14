@@ -28,6 +28,8 @@ def choropleth_svg(scores):
             color = colors[ind]
             p['style'] = path_style + color
     
-    with open('static/test_counties.svg', 'w') as f:
-        f.write(soup.prettify())
+#    with open('static/test_counties.svg', 'w') as f:
+#        f.write(soup.prettify())
         #f.write(unicode(soup.body.next))
+        
+    return soup.prettify()
