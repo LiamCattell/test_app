@@ -37,7 +37,7 @@ def calculate_scores(per_county):
     lower = np.percentile(scores, 25)
     iqr = upper - lower
     
-    print scores.min(), lower, np.median(scores), upper, scores.max()
+    #print scores.min(), lower, np.median(scores), upper, scores.max()
     
     scores[scores > upper+1.5*iqr] = upper+1.5*iqr
     scores[scores < lower-1.5*iqr] = lower-1.5*iqr
@@ -67,19 +67,18 @@ def get_houseprices_scores(houseprices):
     
     price_per_county = dict(zip(zip(pricefips['fips_state'], pricefips['fips_county']), -pricefips['average_price'].values))
     return calculate_scores(price_per_county)
-    
+       
 
-def get_scores(jobs, populations, houseprices):
-    scores_jobs = get_jobs_scores(jobs)
-    scores_pops = get_populations_scores(populations)
-    scores_prices = get_houseprices_scores(houseprices)
-    
+def get_scores(criteria_scores):
     scores = []
     counties = []
     
-    for fips,score_jobs in scores_jobs.iteritems():
+    for fips in criteria_scores[0].iterkeys():
         try:
-            scores.append(score_jobs + scores_pops[fips] + scores_prices[fips])
+            score = 0.
+            for s in criteria_scores:
+                score += s[fips]
+            scores.append(score)
             counties.append(fips)
         except:
             continue

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, make_response
 from plotsvg import choropleth_svg
 from getdata import load_houseprices, load_populations, load_jobs
-from getscores import get_houseprices_scores, get_scores
+from getscores import get_jobs_scores, get_houseprices_scores, get_populations_scores, get_scores
 
 app = Flask(__name__)
 
@@ -52,12 +52,23 @@ def best_places_to_live():
 
 @app.route('/counties_map.svg')
 def counties_map():
+    criteria_scores = []
+    
+    if 'jobs' in app.vars['criteria']:
+        scores = get_jobs_scores(load_jobs('financial-services'))
+        criteria_scores.append(scores)
+        
     if 'houseprices' in app.vars['criteria']:
         scores = get_houseprices_scores(load_houseprices())
-    else:
-        scores = get_scores(load_jobs('financial-services'), load_populations(), load_houseprices())
+        criteria_scores.append(scores)
+        
+    if 'population' in app.vars['criteria']:
+        scores = get_populations_scores(load_populations())
+        criteria_scores.append(scores)
+        
+    final_scores = get_scores(criteria_scores)
     
-    svg = choropleth_svg(scores)
+    svg = choropleth_svg(final_scores)
     response = make_response(svg)
     response.headers['Content-Type'] = 'image/svg+xml'
     
@@ -65,4 +76,4 @@ def counties_map():
 
 
 if __name__ == "__main__":
-	app.run()
+	app.run(debug=True)
