@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from plotsvg import choropleth_svg
-from getdata import load_houseprices
-from getscores import get_houseprices_scores
+from getdata import load_houseprices, load_populations, load_jobs
+from getscores import get_houseprices_scores, get_scores
 
 app = Flask(__name__)
 
@@ -36,6 +36,23 @@ def best_places_for_budget():
         alt_text = 'The best places to find technology jobs, based on your %s house budget.' % max_price
     
         return render_template('prices_vs_jobs_graph.html', max_price=max_price, img_name=img_name, alt_text=alt_text)
+
+
+@app.route('/best_places_to_live', methods=['GET','POST'])
+def best_places_to_live():
+    if request.method == 'GET':
+        return render_template('select_criteria.html')
+    else:
+        criteria = request.form.getlist('criteria')
+        
+        scores = get_scores(load_jobs('financial-services'), load_populations(), load_houseprices())
+        
+        choropleth_svg(scores)
+    
+        return render_template('best_places_to_live.html', criteria=criteria)
+
+
+
 
 
 @app.route('/test_counties')
@@ -95,10 +112,6 @@ def test_counties():
     choropleth_svg(scores_prices)
     
     return redirect('/test_counties_graph')
-    #return render_template('test_counties.html', img_name='test_counties.svg', alt_text='testx')
-    #return render_template('test_counties.html', svg_image=svg)
-    #return render_template('test_counties.html', svg_image=svg), 200, {'Content-Type': 'image/svg+xml'}
-    #return Response(svg, mimetype='image/svg+xml')
     
 @app.route('/test_counties_graph')
 def test_counties_graph():

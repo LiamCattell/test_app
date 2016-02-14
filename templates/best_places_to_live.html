@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Counties</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}" />
+</head>
+
+<body>
+	<div class="page">
+		<h2>Best place to live</h2>
+		<h3>{{criteria}}</h3>
+		
+		<img src="{{url_for('static', filename='test_counties.svg')}}" alt="Counties choropleth"/>
+	</div>
+</body>
+</html>

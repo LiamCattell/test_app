@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Best places to live</title>
+	<link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
+</head>
+
+<body>
+	<div class=page>
+		<h3> 
+			<form id='select_criteria' method='post' action='best_places_to_live' >
+				Select criteria used to define "best place to live":
+				<br />
+				<input type="checkbox" name="criteria" value="jobs">Jobs
+				<br />
+				<input type="checkbox" name="criteria" value="houseprices">House prices
+				<br />
+				<input type="checkbox" name="criteria" value="population">Population growth
+
+				<p>
+					<input type='submit' value='Go!' />
+				</p>
+			</form>
+		</h3>
+	</div>
+</body>
+</html>
