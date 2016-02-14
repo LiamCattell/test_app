@@ -11,12 +11,7 @@ scores = get_scores(load_jobs('financial-services'), load_populations(), load_ho
 
 # Load the SVG map
 svg = open('data/us_counties.svg', 'r').read()
-soup = BeautifulSoup(svg, selfClosingTags=['defs','sodipodi:namedview'])
-
-# Set the viewBox to scale the svg (for some reason, bs4 removes the capitalisation)
-dimensions = soup.findAll('svg')[0]
-soup.find('svg')['viewBox'] = dimensions['viewbox']
-soup.find('svg')['preserveAspectRatio'] = dimensions['preserveaspectratio']
+soup = BeautifulSoup(svg, 'xml')
 
 # Find counties
 paths = soup.findAll('path')
@@ -43,5 +38,5 @@ for p in paths:
         p['style'] = path_style + color
 
 with open('test_counties.svg', 'w') as f:
-    #f.write(soup.prettify())
-    f.write(unicode(soup.body.next))
+    f.write(soup.prettify())
+    #f.write(unicode(soup.body.next))
