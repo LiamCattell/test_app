@@ -35,5 +35,9 @@ def best_places_for_budget():
         return render_template('prices_vs_jobs_graph.html', max_price=max_price, img_name=img_name, alt_text=alt_text)
 
 
+@app.route('/test_counties')
+def test_counties():
+    return render_template('test_counties.html', img_name='test_counties.svg', alt_text='some text')
+
 if __name__ == "__main__":
 	app.run()
