@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, make_response
 from plotsvg import choropleth_svg
 from getdata import load_houseprices, load_populations, load_jobs
 from getscores import get_houseprices_scores, get_scores
 
 app = Flask(__name__)
+
+app.vars = {}
 
 
 @app.route('/')
@@ -43,16 +45,25 @@ def best_places_to_live():
     if request.method == 'GET':
         return render_template('select_criteria.html')
     else:
-        criteria = request.form.getlist('criteria')
-        
+        app.vars['criteria'] = request.form.getlist('criteria')
+
+        return render_template('best_places_to_live.html', criteria=app.vars['criteria'])
+
+
+@app.route('/counties_map.svg')
+def counties_map():
+    if 'houseprices' in app.vars['criteria']:
+        scores = get_houseprices_scores(load_houseprices())
+    else:
         scores = get_scores(load_jobs('financial-services'), load_populations(), load_houseprices())
-        
-        choropleth_svg(scores)
     
-        return render_template('best_places_to_live.html', criteria=criteria)
-
-
-
+    svg = choropleth_svg(scores)
+    response = make_response(svg)
+    response.headers['Content-Type'] = 'image/svg+xml'
+    
+    #<img src="{{url_for('static', filename='test_counties.svg')}}" alt="Counties choropleth"/>
+    
+    return response
 
 
 @app.route('/test_counties')

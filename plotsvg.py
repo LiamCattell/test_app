@@ -23,7 +23,6 @@ def choropleth_svg(scores):
                 continue
             
           
-    tree.write('static/test_counties.svg')
-    
-    return    
-    #return et.tostring(root)
+    #tree.write('static/test_counties.svg')
+    #return    
+    return et.tostring(root)
