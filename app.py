@@ -48,12 +48,17 @@ def best_places_to_live():
         app.vars['criteria'] = request.form.getlist('criteria')
         app.vars['profession_key'] = request.form['profession_key']
 
-        return render_template('best_places_to_live.html', criteria=app.vars['criteria'])
+        criteria_str = ', '.join(app.vars['criteria'])
+        
+        if 'jobs' in app.vars['criteria']:
+            criteria_str = app.vars['profession_key'] + ' ' + criteria_str
+
+        return render_template('best_places_to_live.html', criteria=criteria_str)
 
 
 @app.route('/counties_map.svg')
 def counties_map():
-    criteria_scores = []
+    criteria_scores = []    
     
     if 'jobs' in app.vars['criteria']:
         scores = get_jobs_scores(load_jobs(app.vars['profession_key']))
