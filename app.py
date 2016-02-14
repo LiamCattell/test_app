@@ -44,13 +44,13 @@ def best_places_for_budget():
 def best_places_to_live():
     if request.method == 'GET':
         return render_template('select_criteria.html')
-    else:
+    else:        
         app.vars['criteria'] = request.form.getlist('criteria')
-        app.vars['profession_key'] = request.form['profession_key']
 
         criteria_str = ', '.join(app.vars['criteria'])
         
         if 'jobs' in app.vars['criteria']:
+            app.vars['profession_key'] = request.form['profession_key']
             criteria_str = app.vars['profession_key'] + ' ' + criteria_str
 
         return render_template('best_places_to_live.html', criteria=criteria_str)
@@ -82,4 +82,4 @@ def counties_map():
 
 
 if __name__ == "__main__":
-	app.run()
+	app.run(debug=True)
