@@ -88,9 +88,9 @@ def test_counties():
               (44, 7): 1, (13, 245): 0, (42, 19): 0, (17, 97): 0, (47, 65): 0, 
               (41, 71): 0, (31, 55): 0, (53, 33): 1, (41, 51): 1, (37, 61): 0, (20, 91): 1}
 
-    svg = choropleth_svg(scores)    
+    #svg = choropleth_svg(scores)    
     
-    return render_template('test_counties.html', img_name='test_counties.svg', alt_text=svg)
+    return render_template('test_counties.html', img_name='test_counties.svg', alt_text='testx')
 
 if __name__ == "__main__":
 	app.run()
