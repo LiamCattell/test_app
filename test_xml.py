@@ -16,19 +16,21 @@ path_style += 'stroke-linecap:butt;marker-start:none;stroke-linejoin:bevel;fill:
 
 #for p in root.findall('{http://www.w3.org/2000/svg}path'):
 #    p.set('style', path_style+'#C994C7')
-#    #print p.attrib['style']   
+#    #print p.attrib['style']
     
 for p in root.findall('{http://www.w3.org/2000/svg}path'):
     if p.attrib['id'] not in ['State_Lines', 'separator']:
         # pass
         try:
             fips = (int(p.attrib['id'][:2]), int(p.attrib['id'][2:]))
+            ind = min(int(scores[fips]*5), 5)
+            p.set('style', path_style + colors[ind])
+
+            title = et.Element('{http://www.w3.org/2000/svg}title')
+            title.text = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']  
+            p.append(title)
         except:
             continue
-             
-        ind = min(int(scores[fips]*5), 5)
-        color = colors[ind]
-        p.set('style', path_style + color)
         
       
-tree.write('test_counties2.svg')
+tree.write('test_counties2.svg', method='html')

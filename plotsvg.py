@@ -15,6 +15,11 @@ def choropleth_svg(scores):
         
     for p in root.findall('{http://www.w3.org/2000/svg}path'):
         if p.attrib['id'] not in ['State_Lines', 'separator']:
+            # Add a tooltip to label the state
+            title = et.Element('{http://www.w3.org/2000/svg}title')
+            title.text = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']  
+            p.append(title)
+            
             try:
                 fips = (int(p.attrib['id'][:2]), int(p.attrib['id'][2:]))
                 ind = min(int(scores[fips]*5), 5)
