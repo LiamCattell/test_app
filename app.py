@@ -50,6 +50,8 @@ def best_places_to_live():
         return render_template('best_places_to_live.html', criteria=app.vars['criteria'])
 
 
+#<img src="{{ url_for('counties_map') }}" alt="loading..." />
+
 @app.route('/counties_map.svg')
 def counties_map():
     criteria_scores = []
