@@ -46,6 +46,7 @@ def best_places_to_live():
         return render_template('select_criteria.html')
     else:
         app.vars['criteria'] = request.form.getlist('criteria')
+        app.vars['profession_key'] = request.form['profession_key']
 
         return render_template('best_places_to_live.html', criteria=app.vars['criteria'])
 
@@ -55,7 +56,8 @@ def counties_map():
     criteria_scores = []
     
     if 'jobs' in app.vars['criteria']:
-        scores = get_jobs_scores(load_jobs('financial-services'))
+        
+        scores = get_jobs_scores(load_jobs(app.vars['profession_key']))
         criteria_scores.append(scores)
         
     if 'houseprices' in app.vars['criteria']:
@@ -76,4 +78,4 @@ def counties_map():
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run()
