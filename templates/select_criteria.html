@@ -2,26 +2,37 @@
 <html>
 <head>
 	<title>Best places to live</title>
-	<link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
+	<link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}' />
+	
+	<script type="text/javascript">
+		function toggleDisabled(_checked) {
+			document.getElementById('jobs_list').disabled = _checked ? false : true;
+		}
+	</script>
 </head>
 
 <body>
 	<div class=page>
-		<h3> 
-			<form id='select_criteria' method='post' action='best_places_to_live' >
-				Select criteria used to define "best place to live":
-				<br />
-				<input type="checkbox" name="criteria" value="jobs">Jobs
-				<br />
-				<input type="checkbox" name="criteria" value="houseprices">House prices
-				<br />
-				<input type="checkbox" name="criteria" value="population">Population growth
+		<h3>Select criteria used to define "best place to live":</h3>
+		<br />
+		<form id='select_criteria' method='post' action='best_places_to_live' >
+			<br />
+			<input type="checkbox" name="criteria" value="jobs" onchange="toggleDisabled(this.checked)">Jobs
+			<select name="profession_key" id="jobs_list" disabled>
+				<option value="data-science">Data Science</option>
+				<option value="financial-services">Financial Services</option>
+				<option value="information-technology">Information Technology</option>
+				<option value="mobile-app">Mobile Apps</option>
+			</select>
+			<br />
+			<input type="checkbox" name="criteria" value="houseprices">House prices
+			<br />
+			<input type="checkbox" name="criteria" value="population">Population growth
 
-				<p>
-					<input type='submit' value='Go!' />
-				</p>
-			</form>
-		</h3>
+			<p>
+				<input type='submit' value='Go!' />
+			</p>
+		</form>
 	</div>
 </body>
 </html>
