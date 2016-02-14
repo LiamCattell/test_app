@@ -30,12 +30,14 @@ def get_state_scores(jobs, prices):
     return dict(zip(jobs_per_state.keys(), scores))
     
 
-def get_scores(per_county):
+def calculate_scores(per_county):
     scores = np.array(per_county.values())
     
     upper = np.percentile(scores, 75)
     lower = np.percentile(scores, 25)
     iqr = upper - lower
+    
+    print scores.min(), lower, np.median(scores), upper, scores.max()
     
     scores[scores > upper+1.5*iqr] = upper+1.5*iqr
     scores[scores < lower-1.5*iqr] = lower-1.5*iqr
@@ -48,7 +50,7 @@ def get_scores(per_county):
     
 def get_jobs_scores(jobs):
     jobs_per_county = jobs.groupby(['fips'])['id'].count().to_dict()
-    return get_scores(jobs_per_county)
+    return calculate_scores(jobs_per_county)
     
 
 def get_populations_scores(populations):
@@ -56,11 +58,32 @@ def get_populations_scores(populations):
     popfips = pd.merge(fips[['state','county','fips_state','fips_county']], populations, on=['county', 'state'])
     
     growth_per_county = dict(zip(zip(popfips['fips_state'], popfips['fips_county']), (popfips['population2010']/popfips['population2000']) - 1.))
-    return get_scores(growth_per_county)
+    return calculate_scores(growth_per_county)
     
+
 def get_houseprices_scores(houseprices):
     fips = get_fips_data()
     pricefips = pd.merge(fips[['state','county','fips_state','fips_county']], houseprices, on=['county', 'state'])
     
     price_per_county = dict(zip(zip(pricefips['fips_state'], pricefips['fips_county']), -pricefips['average_price'].values))
-    return get_scores(price_per_county)
+    return calculate_scores(price_per_county)
+    
+
+def get_scores(jobs, populations, houseprices):
+    scores_jobs = get_jobs_scores(jobs)
+    scores_pops = get_populations_scores(populations)
+    scores_prices = get_houseprices_scores(houseprices)
+    
+    scores = []
+    counties = []
+    
+    for fips,score_jobs in scores_jobs.iteritems():
+        try:
+            scores.append(score_jobs + scores_pops[fips] + scores_prices[fips])
+            counties.append(fips)
+        except:
+            continue
+    
+    scores = np.array(scores) / max(scores)
+    
+    return dict(zip(counties, scores))

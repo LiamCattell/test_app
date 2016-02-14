@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
 from getdata import load_houseprices, load_populations, load_jobs
-from getscores import get_houseprices_scores, get_populations_scores, get_jobs_scores
+from getscores import get_houseprices_scores, get_populations_scores, get_jobs_scores, get_scores
 
-scores = get_houseprices_scores(load_houseprices())
+#scores = get_houseprices_scores(load_houseprices())
 #scores = get_populations_scores(load_populations())
-#scores = get_jobs_scores(load_jobs('financial-services'))
+#scores = get_jobs_scores(load_jobs('information-technology'))
+
+scores = get_scores(load_jobs('financial-services'), load_populations(), load_houseprices())
 
 
 # Load the SVG map
