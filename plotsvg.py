@@ -4,6 +4,8 @@ def choropleth_svg(scores):
     tree = et.parse('data/us_counties.svg')
     root = tree.getroot()
     
+    root.set('type', 'image/svg+xml')
+    
     # Map colors
     colors = ["#F1EEF6", "#D4B9DA", "#C994C7", "#DF65B0", "#DD1C77", "#980043"]
     
@@ -22,5 +24,6 @@ def choropleth_svg(scores):
             
           
     tree.write('static/test_counties.svg')
-        
-    return
+    
+    return    
+    #return et.tostring(root)

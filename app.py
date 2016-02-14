@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from plotsvg import choropleth_svg
+from getdata import load_houseprices
+from getscores import get_houseprices_scores
 
 app = Flask(__name__)
 
@@ -88,9 +90,19 @@ def test_counties():
               (44, 7): 1, (13, 245): 0, (42, 19): 0, (17, 97): 0, (47, 65): 0, 
               (41, 71): 0, (31, 55): 0, (53, 33): 1, (41, 51): 1, (37, 61): 0, (20, 91): 1}
 
-    choropleth_svg(scores)    
+    scores_prices = get_houseprices_scores(load_houseprices())
     
+    choropleth_svg(scores_prices)
+    
+    return redirect('/test_counties_graph')
+    #return render_template('test_counties.html', img_name='test_counties.svg', alt_text='testx')
+    #return render_template('test_counties.html', svg_image=svg)
+    #return render_template('test_counties.html', svg_image=svg), 200, {'Content-Type': 'image/svg+xml'}
+    #return Response(svg, mimetype='image/svg+xml')
+    
+@app.route('/test_counties_graph')
+def test_counties_graph():
     return render_template('test_counties.html', img_name='test_counties.svg', alt_text='testx')
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run()
