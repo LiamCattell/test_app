@@ -11,6 +11,16 @@
 		<h3>&#42;Based on: {{criteria}}</h3>
 		
 		<object type="image/svg+xml" data="{{ url_for('counties_map') }}">Awww snap... Heroku took too long to create the svg file.</object>
+		
+		<table>
+			<tr>
+				<td class=left>Worst places</td>
+				<td>
+					<img src="{{url_for('static', filename='colorbar.png')}}" alt="Color bar"/>
+				</td>
+				<td class=right>Best places</td>
+			<tr>
+		</table>
 	</div>
 </body>
 </html>
