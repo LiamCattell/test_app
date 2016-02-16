@@ -18,14 +18,16 @@ def choropleth_svg(scores):
             # Add a tooltip to label the state
             title = et.Element('{http://www.w3.org/2000/svg}title')
             title.text = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']  
-            p.append(title)
             
             try:
                 fips = (int(p.attrib['id'][:2]), int(p.attrib['id'][2:]))
                 ind = min(int(scores[fips]*5), 5)
                 p.set('style', path_style + colors[ind])
+                title.text += '\nScore: %0.2f' % scores[fips]
             except:
                 continue
+            
+            p.append(title)
             
           
     #tree.write('static/test_counties.svg')
