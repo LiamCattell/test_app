@@ -1,4 +1,9 @@
 <ns0:svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ns0="http://www.w3.org/2000/svg" xmlns:ns1="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:ns2="http://www.inkscape.org/namespaces/inkscape" xmlns:ns4="http://web.resource.org/cc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" height="100%" id="svg9559" preserveAspectRatio="xMidYMid meet" version="1.0" viewBox="0 0 556 351" width="100%" ns1:docbase="C:\Users\svg" ns1:docname="USA_Counties - Copy.svg" ns1:version="0.32" ns2:output_extension="org.inkscape.output.svg.inkscape" ns2:version="0.45.1">
+  <ns0:style type="text/css">
+        path:not(#State_Lines):not(#separator):hover{
+           fill:#FFD700 !important;
+        }
+  </ns0:style>
   <ns0:metadata id="metadata3671">
     <rdf:RDF>
       <ns4:Work rdf:about="">
