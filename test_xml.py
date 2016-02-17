@@ -21,18 +21,21 @@ path_style += 'stroke-linecap:butt;marker-start:none;stroke-linejoin:bevel;fill:
 for p in root.findall('{http://www.w3.org/2000/svg}path'):
     if p.attrib['id'] not in ['State_Lines', 'separator']:
         # Add tooltip
-        title = et.Element('{http://www.w3.org/2000/svg}title')
-        title.text = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']  
+        #title = et.Element('{http://www.w3.org/2000/svg}title')
+        #title.text = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']
+        tooltip = p.attrib['{http://www.inkscape.org/namespaces/inkscape}label']
             
         try:
             fips = (int(p.attrib['id'][:2]), int(p.attrib['id'][2:]))
             ind = min(int(scores[fips]*5), 5)
             p.set('style', path_style + colors[ind])
-            title.text += '\nScore: %0.2f' % scores[fips]
+            #title.text += '\nScore: %0.2f' % scores[fips]
+            tooltip += '\nScore: %0.2f' % scores[fips]
         except:
             continue
         
-        p.append(title)
+        p.set('onmousemove', "ShowTooltip(evt, '%s')" % tooltip)
+        #p.append(title)
         
       
 tree.write('test_counties2.svg', method='html')
